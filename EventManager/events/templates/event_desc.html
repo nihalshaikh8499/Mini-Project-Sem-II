@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Ensure no scrollbars */
+    html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Prevents scrolling */
+    }
+    
+    /* Make the container take full height, accounting for navbar */
+    .content-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 56px); /* Adjust for navbar height */
+        overflow: hidden; /* Ensures no scrollbars */
+    }
+    
+    /* Ensure card fits within viewport */
+    .card {
+        max-width: 700px;
+        width: 100%;
+    }
+</style>
+
+<div class="content-container">
+    <div class="card shadow-sm">
+        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 300px; object-fit: cover;">
+        <div class="card-body">
+            <h3 class="card-title">{{ event.name }}</h3>
+            <p class="text-muted">{{ event.category }}</p>
+            <p class="card-text">{{ event.description }}</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Date:</strong> {{ event.date }}</li>
+                <li class="list-group-item"><strong>Time:</strong> {{ event.time }}</li>
+                <li class="list-group-item"><strong>Venue:</strong> {{ event.venue }}</li>
+            </ul>
+            <div class="text-center mt-4">
+                <a href="{% url 'event_registration' event.id %}" class="btn btn-primary btn-lg">Proceed</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

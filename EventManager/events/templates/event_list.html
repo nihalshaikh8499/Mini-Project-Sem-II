@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4">
+            <div class="card shadow-lg ">
+                <a href="{% url 'event_detail' event.id %}">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+                {% else %}
+                <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
+                {% endif %}
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
+                    {% comment %} <p class="card-text">{{ event.description|truncatewords:20 }}</p> {% endcomment %}
+                    <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
+                    <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
+                    <div class="d-flex justify-content-between">
+                        {% comment %} <a href="" class="btn btn-primary">Register</a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
