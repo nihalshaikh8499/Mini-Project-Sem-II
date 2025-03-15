@@ -8,18 +8,20 @@ from .forms import UserRegistrationForm, EventRegistrationForm
 # def index(request):
 #     return render(request, 'index.html')
 
-@login_required
 def event_list(request):
-    events = Event.objects.all().order_by('-created_at') 
+    sports_events = Event.objects.filter(category='Sports').order_by('-created_at')
+    cultural_events = Event.objects.filter(category='Cultural').order_by('-created_at')
+    coding_events = Event.objects.filter(category='Coding').order_by('-created_at')
+    other_events = Event.objects.filter(category='Other').order_by('-created_at') 
 
-    return render(request, 'event_list.html', {'events':events})
+    return render(request, 'event_list.html', {'sports_events':sports_events,'coding_events':coding_events,'cultural_events':cultural_events,'other_events':other_events})
 
-@login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'event_desc.html', {'event':event})
 
 def event_registration(request, event_id):
+    
     event = get_object_or_404(Event, id=event_id)
 
     if request.method == 'POST':

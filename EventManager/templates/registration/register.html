@@ -58,7 +58,7 @@
             <form method="post">
                 {% csrf_token %}
                 
-                <div class="mb-3">
+                <div class="mb-3 ms-4">
                     <label for="{{ form.username.id_for_label }}" class="label-style">Username</label>
                     {{ form.username }}
                     {% if form.username.errors %}
@@ -67,7 +67,7 @@
                 </div>
 
                 
-                <div class="mb-3">
+                <div class="mb-3  ms-4">
                     <label for="{{ form.email.id_for_label }}" class="label-style ">Email</label>
                     {{ form.email }}
                     {% if form.email.errors %}
@@ -75,7 +75,7 @@
                     {% endif %}
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 ms-4">
                     <label for="{{ form.password1.id_for_label }}" class="label-style">Password</label>
                     {{ form.password1 }}
                     {% if form.password1.errors %}
@@ -83,15 +83,17 @@
                     {% endif %}
                 </div>
                 
-                <div class="mb-3">
+                <div class="mb-3 ms-4">
                     <label for="{{ form.password2.id_for_label }}" class="label-style">Confirm Password</label>
                     {{ form.password2 }}
                     {% if form.password2.errors %}
                         <div class="text-danger small">{{ form.password2.errors|striptags }}</div>
                     {% endif %}
                 </div>
-
-                <button class="btn btn-primary w-100">Register</button>
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary ">Register</button>
+                </div>
+                
             </form>
             
             <p class="mt-3 text-center">
