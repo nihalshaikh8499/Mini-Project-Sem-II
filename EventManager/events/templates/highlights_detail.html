@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+
+.glightbox-clean .gdesc,
+.glightbox-clean .gslide-description {
+  background: transparent !important;
+  padding: 0 !important;
+  margin-top: 10px !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+
+.glightbox-clean .gslide-description {
+  text-align: right !important;
+  padding-right: 20px; 
+}
+
+
+.glightbox img {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glightbox img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+</style>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    {% for img in highlight.images.all %}
+      <div class="col-12 col-md-6">
+        <a 
+          href="{{ img.image.url }}" 
+          class="glightbox d-block rounded shadow-sm overflow-hidden"
+          data-gallery="event-gallery"
+          data-description='
+            <div class="text-end">
+              <a href="{{ img.image.url }}" download class="btn btn-primary btn-sm">Download</a>
+            </div>'
+        >
+          <img src="{{ img.image.url }}" alt="Event image" class="img-fluid w-100" style="height: 300px; object-fit: cover;">
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+  const lightbox = GLightbox({
+    selector: '.glightbox',
+    touchNavigation: true,
+    loop: true,
+    zoomable: true,
+    moreText: '',
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    </style>
+
+<div class="container mt-4">
+  <h1 class="mb-2">Event Highlights</h1>
+  <hr>
+  <div class="row">
+    {% for event in highlights %}
+      <div class="col-md-4 mb-4 mt-2">
+        <div class="card card-hover h-100">
+          <a href="{% url 'highlight_detail' event.id %}">
+            {% if event.first_image %}
+              <img src="{{ event.first_image.image.url }}" class="card-img-top" alt="{{ event.title }}">
+            {% else %}
+              <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
+            {% endif %}
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text text-muted">Uploaded on: {{ event.created_at|date:"M d, Y" }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

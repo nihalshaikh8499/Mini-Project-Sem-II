@@ -8,66 +8,65 @@
         {% block title %} Events App {% endblock %}
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+    
     <style>
-        /* Ensure the sidebar stays fixed below the navbar */
+
+        
         .sidebar {
             position: fixed;
-            top: 56px; /* Adjust to match navbar height */
+            top: 56px;
             left: 0;
             width: 280px;
-            height: calc(100vh - 56px); /* Full height minus navbar */
-            background-color: #343a40; /* Dark background */
+            height: calc(100vh - 56px); 
+            background-color: #343a40; 
             padding: 1rem;
-            overflow-y: auto; /* Scroll if needed */
+            overflow-y: auto; 
         }
 
-        /* Push main content to the right of the fixed sidebar */
+        
         .content {
-            margin-left: 280px; /* Same width as sidebar */
+            margin-left: 280px; 
             padding: 2rem;
-            padding-top: 56px; /* Prevent content from hiding under navbar */
+            padding-top: 56px; 
         }
 
         
     </style>
 </head>
-<body>
+<body class="">
     
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark ">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Events</a>
+          <a class="navbar-brand " href="{% url "event_list" %}"><h4 class="mb-1"><strong>Eventify</strong></h4></a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
               <li class="nav-item">
-                <a class="nav-link active" href="#">Home</a>
+                <a class="nav-link active" href="#"></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Events</a>
+                <a class="nav-link" href="#"></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
+                <a class="nav-link" href="#"></a>
               </li>
             </ul>
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search for events">
-              <button class="btn btn-outline-success me-2" type="submit">Search</button>
+            <form class="d-flex" role="search" method="get" action="{% url 'event_list' %}">
+              <input class="form-control me-2 custom-shadow-button" type="search" name="q" placeholder="Search for events" aria-label="Search" value="{{ query|default:'' }}">
+              <button class="btn btn-outline-success custom-shadow-button me-2" type="submit">Search</button>
             </form>
           </form>
           {% if user.is_authenticated %}
           <form action= {% url 'logout' %} method="post">
             {% csrf_token %}
             {% comment %} <button class="btn " type = 'submit'><img src="{% static "images/logout.png" %}" height="40px" width="40px" alt=""></button> {% endcomment %}
-            <button class="btn btn-danger custom-shadow-button ms-2 mx-2" type = 'submit'>Logout</button>
+            <button class="btn btn-danger"   type = 'submit'>Logout</button>
             
           </form> 
           
-          {% else %}
-          <a href="{%url 'login'%}" class="btn btn-primary ms-2 custom-shadow-button mt-1 mb-1" >Login</a>
-          {% comment %} <a href="{%url 'register'%}" class="btn btn-secondary mx-2 custom-shadow-button" >Register</a> {% endcomment %}
           {% endif %}
             {% comment %} <div class="dropdown ms-3">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
@@ -85,18 +84,18 @@
     </nav>
 
     <!-- Sidebar -->
-    <div class="sidebar text-white">
+    <div class="sidebar text-white bg-dark">
       <h3><img src="https://cdn0.iconfinder.com/data/icons/user-pictures/100/unknown_1-2-1024.png" height="40px" width="40px" class="me-2 mb-1" alt="">{{request.user.username}}</h3>  
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="#" class="nav-link active">Home</a>
+                <a href="{% url "event_list" %}" class="nav-link active">Home</a>
             </li>
-            <li><a href="#" class="nav-link text-white">Events</a></li>
-            <li><a href="#" class="nav-link text-white">Volunteer</a></li>
-            <li><a href="#" class="nav-link text-white">Registered Events</a></li>
-        </ul>
-        <hr>
+            {% comment %} <li><a href="#" class="nav-link text-white">Events</a></li> {% endcomment %}
+            <li><a href="{% url "volunteer_events" %}" class="nav-link text-white">Volunteer</a></li>
+            <li><a href="{% url "registered_events" %}" class="nav-link text-white">Registered Events</a></li>
+            <li><a href="{% url "highlights_list" %}" class="nav-link text-white">Event Highlights</a></li>
+            <li><a href="{% url "contact" %}" class="nav-link text-white">Contact us</a></li>
     </div>
 
     <!-- Main Content -->

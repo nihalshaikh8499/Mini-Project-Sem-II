@@ -1,31 +1,75 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
 <style>
     /* Style for uniform card sizes */
     .card-img-top {
-        height: 250px; /* Adjust height as needed */
-        object-fit: cover; /* Ensures image covers the area without stretching */
-        width: 100%; /* Makes sure the image fits the width */
+        height: 250px;
+        object-fit: cover;
+        width: 100%;
     }
 
     .card {
-        height: 100%; /* Makes all cards the same height */
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card-body {
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* Distributes space between content */
+        justify-content: space-between;
         height: 100%;
+    }
+
+    /* Hover effect for all cards */
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     }
 </style>
 
+{% if query %}
+    {% if events %}
+    <h3 class="mt-4 ms-2">Search Results for "{{ query }}"</h3>
+        <div class="container mt-4">
+            <div class="row">
+                {% for event in events %}
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg">
+                        <a href="{% url 'event_detail' event.id %}">
+                            {% if event.image %}
+                            <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
+                            {% endif %}
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
+                            <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
+                            <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button class="btn btn-primary ms-3" onclick="window.location.href='{% url 'event_list' %}'">Back to events</button>
+    {% else %}
+    <div class="d-flex flex-column align-items-center mt-5">
+        <h3>No events found for your search "{{ query }}".</h3>
+        <button class="btn btn-primary mt-3 ms-2" onclick="window.location.href='{% url 'event_list' %}'">Back to events</button>
+    </div>
+    {% endif %}
+{% endif %}
+
 {% if sports_events.exists %}
-<h1 class="ms-2">Upcoming Sports Events:</h1>
-<div class="container mt-3 mb-2">
+<h1 class="ms-2 pt-3">Upcoming Sports Events:</h1>
+<hr>
+<div class="container mt-4">
     <div class="row">
         {% for event in sports_events %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-lg">
                 <a href="{% url 'event_detail' event.id %}">
                     {% if event.image %}
@@ -34,8 +78,20 @@
                     <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
                     {% endif %}
                 </a>
+                
                 <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
+                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                        {{ event.name }}
+                        {% if event.id in registered_event_ids %}
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                        {% endif %}
+                        {% if event.is_registration_expired %}
+                        <span class="expired-icon text-danger ms-2">
+                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
+                        </span>
+                    {% endif %}
+                    </h5>
+                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
@@ -45,14 +101,15 @@
         {% endfor %}
     </div>
 </div>
+<hr>
 {% endif %}
 
 {% if coding_events.exists %}
 <h1 class="ms-2">Upcoming Coding Events:</h1>
-<div class="container mt-3">
+<div class="container mt-4">
     <div class="row">
         {% for event in coding_events %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-lg">
                 <a href="{% url 'event_detail' event.id %}">
                     {% if event.image %}
@@ -62,7 +119,18 @@
                     {% endif %}
                 </a>
                 <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
+                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                        {{ event.name }}
+                        {% if event.id in registered_event_ids %}
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                        {% endif %}
+                        {% if event.is_registration_expired %}
+                        <span class="expired-icon text-danger ms-2">
+                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
+                        </span>
+                    {% endif %}
+                    </h5>
+                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
@@ -72,11 +140,12 @@
         {% endfor %}
     </div>
 </div>
+<hr>
 {% endif %}
 
 {% if cultural_events.exists %}
 <h1 class="ms-2">Upcoming Cultural Events:</h1>
-<div class="container mt-3">
+<div class="container mt-4">
     <div class="row">
         {% for event in cultural_events %}
         <div class="col-md-4 mb-4">
@@ -89,34 +158,18 @@
                     {% endif %}
                 </a>
                 <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
-                    <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
-                    <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
-                    <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-
-{% if other_events.exists %}
-<h1 class="ms-2">Upcoming Other Events:</h1>
-<div class="container mt-3">
-    <div class="row">
-        {% for event in other_events %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-lg">
-                <a href="{% url 'event_detail' event.id %}">
-                    {% if event.image %}
-                    <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
-                    {% else %}
-                    <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
+                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                        {{ event.name }}
+                        {% if event.id in registered_event_ids %}
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                        {% endif %}
+                        {% if event.is_registration_expired %}
+                        <span class="expired-icon text-danger ms-2">
+                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
+                        </span>
                     {% endif %}
-                </a>
-                <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
+                    </h5>
+                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
@@ -126,5 +179,6 @@
         {% endfor %}
     </div>
 </div>
+<hr>
 {% endif %}
 {% endblock %}

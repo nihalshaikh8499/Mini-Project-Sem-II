@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+.card {
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-img-top {
+        height: 250px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+</style>
+<div class="container mt-4">
+    <h1 class=" mb-4">Events Requiring Volunteers:</h1>
+    <hr>    
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4 mt-3">
+            <div class="card shadow-lg">
+                <a href="{% url 'volunteer_registration' event.id %}">
+                    {% if event.image %}
+                    <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
+                    {% endif %}
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title d-flex justify-content-between align-items-center">{{ event.name }}</h5>
+                    <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
+                    <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
+                    <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
+                    <p class="card-text text-danger"><strong>Volunteers Needed:</strong>  {{ event.volunteer_count }} / {{ event.volunteer_requirement }}</p>
+                    <div class="d-flex justify-content-center">
+                    
+                    {% if event.volunteer_count == event.volunteer_requirement %}
+                        <button class="btn btn-secondary" disabled>Full</button>
+                    {% elif event.id in registered_event_ids %}
+                        <button class="btn btn-secondary" disabled>Participant</button>
+                    {% elif event.id in volunteer_registered_event_ids %}
+                        <button class="btn btn-success" disabled>Registered</button>
+                    {% elif event.is_registration_expired %}
+                        <button class="btn btn-secondary" disabled>Expired</button>
+                    {% else %}
+                        <a href="{% url 'volunteer_registration' event.id %}" class="btn btn-primary">Volunteer</a>
+                    {% endif %}
+                </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No events currently require volunteers.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

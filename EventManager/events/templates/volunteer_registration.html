@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center mt-3 mb-0">
+    
+    <div class="card shadow-sm p-4" style="max-width: 500px; width: 100%;">
+        <h2 class="text-center mb-4">Volunteer for {{ event.name }}</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Department</label>
+                {{ form.department}}
+                {% if form.department.errors %}
+                    <div class="text-danger small">{{ form.department.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Phone Number</label>
+                {{ form.phone_number|add_class:"form-control w-100" }}
+                {% if form.phone_number.errors %}
+                    <div class="text-danger small">{{ form.phone_number.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Full Name</label>
+                {{ form.name|add_class:"form-control w-100" }}
+                {% if form.name.errors %}
+                    <div class="text-danger small">{{ form.name.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Roll Number</label>
+                {{ form.rollnumber|add_class:"form-control w-100" }}
+                {% if form.rollnumber.errors %}
+                    <div class="text-danger small">{{ form.rollnumber.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="margin-top: 60px;">
+    
+    <div class="card shadow-lg p-4 d-flex flex-row" style="max-width: 800px; width: 100%;">
+
+      
+        <div class="w-50 d-flex align-items-center justify-content-center">
+            <img src="{% static 'images/contact.svg' %}" alt="Contact Us Image" class="img-fluid rounded" style="max-height: 100%;">
+        </div>
+
+  
+        <div class="vr" style="width: 2px; background-color: black;"></div>
+
+        <div class="w-50 px-4">
+            <h2 class="text-center mb-4">Contact us</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
+                    {{ form.subject|add_class:"form-control focus border-dark" }}  
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
+                    {{ form.message|add_class:"form-control border border-dark focus border-dark" }}  
+                </div>
+
+                <div class="d-grid justify-content-center">
+                    <button type="submit" class="btn btn-primary w-auto">Send message</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

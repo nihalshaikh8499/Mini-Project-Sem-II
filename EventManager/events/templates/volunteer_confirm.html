@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2>Volunteer Registration Confirmation</h2>
+    <p>Are you sure you want to register as a volunteer for <strong>{{ event.name }}</strong>?</p>
+    
+    <a href="{% url 'volunteer_registration' event.id %}" class="btn btn-success">Yes, Register Me</a>
+    <a href="{% url 'volunteer_events' %}" class="btn btn-danger">No, Go Back</a>
+</div>
+{% endblock %}

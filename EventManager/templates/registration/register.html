@@ -1,4 +1,5 @@
 {% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,40 +12,8 @@
             box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.7);
             border-radius: 10px;
         }
-
-        /* Custom Styling for Each Field */
-        .label-style {
-            font-weight: bold;
-            color: #000000;
-            font-size: 16px;
-        }
-        .input-style {
-            border-radius: 5px;
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            background-color: #222;
-            color: white;
-        }
-        .custom-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        input[type=text],
-        input[type=password],
-        textarea,input[type=email] {
-            border: 1px solid #000000;
-            border-radius: 5px;
-            padding: 10px;
-            width: 90%;
-        }
-
-        label {
-            padding-top: 10px !important;
-            display: block;
+        .full-height {
+            height: 100%;
         }
     </style>
     
@@ -52,53 +21,67 @@
 </head>
 <body>
     <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="card p-4 custom-shadow" style="width: 100%; max-width: 450px;">
-            <h2 class="text-center mb-3">Register</h2>
+        <div class="card custom-shadow p-4 d-flex flex-row align-items-stretch" style="max-width: 900px; width: 100%;">
             
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="mb-3 ms-4">
-                    <label for="{{ form.username.id_for_label }}" class="label-style">Username</label>
-                    {{ form.username }}
-                    {% if form.username.errors %}
-                        <div class="text-danger small">{{ form.username.errors|striptags }}</div>
-                    {% endif %}
-                </div>
+            <!-- Left Side: Image Section -->
+            <div class="w-50 d-flex align-items-center justify-content-center">
+                <img src="{% static 'images/register2.svg' %}" alt="Register Image" class="img-fluid rounded p-3">
+            </div>
 
-                
-                <div class="mb-3  ms-4">
-                    <label for="{{ form.email.id_for_label }}" class="label-style ">Email</label>
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                        <div class="text-danger small">{{ form.email.errors|striptags }}</div>
-                    {% endif %}
-                </div>
+            <!-- Vertical Divider -->
+            <div class="d-flex align-items-stretch">
+                <div class="vr full-height" style="width: 2px; background-color: black;"></div>
+            </div>
 
-                <div class="mb-3 ms-4">
-                    <label for="{{ form.password1.id_for_label }}" class="label-style">Password</label>
-                    {{ form.password1 }}
-                    {% if form.password1.errors %}
-                        <div class="text-danger small">{{ form.password1.errors|striptags }}</div>
-                    {% endif %}
-                </div>
+            <!-- Right Side: Form Section -->
+            <div class="w-50 p-4">
+                <h2 class="text-center mb-3">Register</h2>
                 
-                <div class="mb-3 ms-4">
-                    <label for="{{ form.password2.id_for_label }}" class="label-style">Confirm Password</label>
-                    {{ form.password2 }}
-                    {% if form.password2.errors %}
-                        <div class="text-danger small">{{ form.password2.errors|striptags }}</div>
-                    {% endif %}
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button class="btn btn-primary ">Register</button>
-                </div>
-                
-            </form>
-            
-            <p class="mt-3 text-center">
-                Already registered? <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
-            </p>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">Username</label>
+                        {{ form.username|add_class:"form-control" }}
+                        {% if form.username.errors %}
+                            <div class="text-danger small">{{ form.username.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">Email</label>
+                        {{ form.email|add_class:"form-control" }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">Password</label>
+                        {{ form.password1|add_class:"form-control" }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger small">{{ form.password1.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">Confirm Password</label>
+                        {{ form.password2|add_class:"form-control" }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger small">{{ form.password2.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+
+                <p class="mt-3 text-center">
+                    Already registered? <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
+                </p>
+            </div>
+
         </div>
     </div>
 </body>
