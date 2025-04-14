@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+    .card-img-top {
+        height: 250px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .card {
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Fixed buttons styles */
+    .fixed-action-buttons {
+        position: fixed;
+        top: 70px; /* Position below the navbar */
+        right: 20px;
+        z-index: 1000; /* Ensures buttons stay on top of other content */
+        display: flex;
+        gap: 10px;
+        margin-top:10px;
+    }
+</style>
+
+<!-- Fixed buttons that will stay visible when scrolling -->
+<div class="fixed-action-buttons">
+    <a href="{% url 'create_event' %}" class="btn btn-primary rounded-pill">+ Create Event</a>
+    <a href="{% url 'delete_completed_events' %}" class="btn btn-danger rounded-pill"><i class="bi bi-trash"></i> Completed Events</a>
+</div>
+
+{% if query %}
+    <h3 class="mt-4 ms-2">Search Results for "{{ query }}"</h3>
+    {% include 'partials/admin_event_cards.html' with events=events %}
+    <button class="btn btn-primary ms-3" onclick="window.location.href='{% url 'admin_event_list' %}'">Back to events</button>
+{% else %}
+    {% if sports_events.exists %}
+    <div class="d-flex justify-content-between align-items-center ms-2 pt-3 me-4">
+        <h1 class="mb-0">Sports Events</h1>
+        <!-- Original buttons removed since they're now fixed -->
+        <div style="width: 280px;"></div> <!-- Spacer to maintain original layout -->
+    </div>
+    <hr>
+    {% include 'partials/admin_event_cards.html' with events=sports_events %}
+    {% endif %}
+
+    {% if coding_events.exists %}
+        <h1 class="ms-2">Coding Events</h1><hr>
+        {% include 'partials/admin_event_cards.html' with events=coding_events %}
+    {% endif %}
+
+    {% if cultural_events.exists %}
+        <h1 class="ms-2">Cultural Events</h1><hr>
+        {% include 'partials/admin_event_cards.html' with events=cultural_events %}
+    {% endif %}
+
+    {% if other_events.exists %}
+        <h1 class="ms-2">Other Events</h1><hr>
+        {% include 'partials/admin_event_cards.html' with events=other_events %}
+    {% endif %}
+{% endif %}
+{% endblock %}

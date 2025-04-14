@@ -2,7 +2,6 @@
 {% block content %}
 {% load static %}
 <style>
-    /* Style for uniform card sizes */
     .card-img-top {
         height: 250px;
         object-fit: cover;
@@ -21,10 +20,15 @@
         height: 100%;
     }
 
-    /* Hover effect for all cards */
     .card:hover {
         transform: scale(1.05);
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .expired-card {
+        background-color: #d3d3d3 !important;
+        opacity: 0.75;
+        pointer-events: none;
     }
 </style>
 
@@ -43,7 +47,7 @@
                             <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
                             {% endif %}
                         </a>
-                        <div class="card-body">
+                        <div class="card-body {% if event.is_registration_expired %}expired-card{% endif %}">
                             <h5 class="card-title">{{ event.name }}</h5>
                             <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                             <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
@@ -79,19 +83,13 @@
                     {% endif %}
                 </a>
                 
-                <div class="card-body">
+                <div class="card-body {% if event.is_registration_expired %}expired-card{% endif %}">
                     <h5 class="card-title d-flex justify-content-between align-items-center">
                         {{ event.name }}
                         {% if event.id in registered_event_ids %}
-                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span>
                         {% endif %}
-                        {% if event.is_registration_expired %}
-                        <span class="expired-icon text-danger ms-2">
-                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
-                        </span>
-                    {% endif %}
                     </h5>
-                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
@@ -118,19 +116,13 @@
                     <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
                     {% endif %}
                 </a>
-                <div class="card-body">
+                <div class="card-body {% if event.is_registration_expired %}expired-card{% endif %}">
                     <h5 class="card-title d-flex justify-content-between align-items-center">
                         {{ event.name }}
                         {% if event.id in registered_event_ids %}
-                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span>
                         {% endif %}
-                        {% if event.is_registration_expired %}
-                        <span class="expired-icon text-danger ms-2">
-                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
-                        </span>
-                    {% endif %}
                     </h5>
-                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>
@@ -157,19 +149,13 @@
                     <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available">
                     {% endif %}
                 </a>
-                <div class="card-body">
+                <div class="card-body {% if event.is_registration_expired %}expired-card{% endif %}">
                     <h5 class="card-title d-flex justify-content-between align-items-center">
                         {{ event.name }}
                         {% if event.id in registered_event_ids %}
-                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span> <!-- Checkmark icon -->
+                            <span class="registered-icon text-success ms-2"><img src="{% static "images/reg_figma.svg" %}" height="20px"  alt=""></span>
                         {% endif %}
-                        {% if event.is_registration_expired %}
-                        <span class="expired-icon text-danger ms-2">
-                            <img src="{% static 'images/main_expired.svg' %}" height="20px" alt="Expired">
-                        </span>
-                    {% endif %}
                     </h5>
-                    
                     <p class="card-text text-muted"><strong>Category:</strong> {{ event.category }}</p>
                     <p class="card-text"><strong>Date:</strong> {{ event.date }} | <strong>Time:</strong> {{ event.time }}</p>
                     <p class="card-text"><strong>Venue:</strong> {{ event.venue }}</p>

@@ -3,6 +3,10 @@ from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms.widgets import FileInput
+
+
+
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField()
@@ -15,6 +19,28 @@ class UserRegistrationForm(UserCreationForm):
         if not AllowedEmail.objects.filter(email=email).exists():
             raise ValidationError("This email is not allowed to register.")
         return email
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            'name', 'description', 'category', 'date', 'time', 'venue',
+            'image', 'min_players', 'max_players', 'rule_book',
+            'volunteer_requirement', 'registration_deadline'
+        ]
+
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'time': forms.TimeInput(attrs={'type': 'time'}),
+            'registration_deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
 
 
 class EventRegistrationForm(forms.ModelForm):
@@ -67,5 +93,5 @@ class VolunteerRegistrationForm(forms.ModelForm):
         model = VolunteerRegistration
         fields = ['name', 'rollnumber', 'phone_number', 'department']
 
-    
+
     

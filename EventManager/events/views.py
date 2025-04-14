@@ -15,11 +15,264 @@ from .utils import verify_token
 from django.contrib import messages
 from django.utils.timezone import now
 from django.db.models import Count
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from .forms import EditProfileForm
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic import ListView
+from django.views.generic.edit import  CreateView, UpdateView, DeleteView
+from django.http import HttpResponse
+import csv
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+"""Event Admin"""
+class CreateEventView(LoginRequiredMixin,CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'create_event.html'
+    success_url = reverse_lazy('admin_event_list')
+
+class EditEventView(LoginRequiredMixin,UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'edit_event.html'
+    success_url = reverse_lazy('admin_event_list')
+
+class DeleteEventView(LoginRequiredMixin,DeleteView):
+    model = Event
+    template_name = 'delete_event_confirm.html'
+    success_url = reverse_lazy('admin_event_list')
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def delete_completed_events(request):
+    Event.objects.filter(date__lt=timezone.now().date()).delete()
+    return redirect('admin_event_list')
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def download_participants(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    registrations = EventRegistration.objects.filter(event=event)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{event.name}_participants.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'Email', 'Phone Number', 'Department', 'Players'])
+
+    for reg in registrations:
+        # Safely extract player names (or any other info)
+        players_str = ', '.join(player.get('name', '') for player in reg.players)
+
+        writer.writerow([
+            reg.user.username,
+            reg.user.email,
+            reg.phone_number,
+            reg.get_department_display(),
+            players_str
+        ])
+
+    return response
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def download_volunteer_csv(request, event_id):
+    if not request.user.is_staff:
+        return HttpResponse("Unauthorized", status=401)
+
+    event = get_object_or_404(Event, id=event_id)
+    volunteers = VolunteerRegistration.objects.filter(event=event)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{event.name}_volunteers.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Name', 'Roll Number', 'Department', 'Phone Number', 'Email', 'Registered At'])
+
+    for v in volunteers:
+        writer.writerow([
+            v.name,
+            v.rollnumber,
+            v.get_department_display(),
+            v.phone_number,
+            v.user.email,
+            v.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+
+    return response
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def contact_messages_view(request):
+    contact_messages = ContactFormModel.objects.all().order_by('-created_at')
+    return render(request, 'contact_messages.html', {'contact_messages': contact_messages})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def delete_contact_message(request, message_id):
+    message = get_object_or_404(ContactFormModel, id=message_id)
+    message.delete()
+    messages.success(request, "Message deleted successfully.")
+    return redirect('contact_messages')
+
+# Restrict access to staff users only
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+# List View
+class AllowedEmailListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
+    model = AllowedEmail
+    template_name = 'allowed_emails.html'
+    context_object_name = 'emails'
+
+# Create View
+class AllowedEmailCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
+    model = AllowedEmail
+    fields = ['email']
+    template_name = 'allowed_email_form.html'
+    success_url = reverse_lazy('allowed_email_list')
+
+# Update View
+class AllowedEmailUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
+    model = AllowedEmail
+    fields = ['email']
+    template_name = 'allowed_email_form.html'
+    success_url = reverse_lazy('allowed_email_list')
+
+# Delete View
+class AllowedEmailDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+    model = AllowedEmail
+    template_name = 'allowed_email_confirm_delete.html'
+    success_url = reverse_lazy('allowed_email_list')
+    
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def create_event_highlight(request):
+    if request.method == 'POST':
+        data = request.POST
+        images = request.FILES.getlist('images')
+
+        title = data.get('title')
+        description = data.get('description')
+
+        # Save the EventHighlight
+        highlight = EventHighlight.objects.create(
+            title=title,
+            description=description
+        )
+
+        # Save associated images
+        for image in images:
+            EventImage.objects.create(
+                event=highlight,
+                image=image
+            )
+
+        return redirect('highlights_list')  # Replace with your actual redirect
+
+    return render(request, 'create_highlight.html')  # Update path if needed
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def volunteer_list_view(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    registrations = VolunteerRegistration.objects.filter(event=event)
+    return render(request, 'volunteer_list.html', {
+        'event': event,
+        'registrations': registrations
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def event_participants(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    participants = EventRegistration.objects.filter(event=event)
+    return render(request, 'event_participants.html', {'event': event, 'participants': participants})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def delete_participant(request, reg_id):
+    registration = get_object_or_404(EventRegistration, id=reg_id)
+    event_id = registration.event.id
+    registration.delete()
+    messages.success(request, "Participant deleted successfully.")
+    return redirect('event_participants', event_id=event_id)
+
+@user_passes_test(lambda u: u.is_staff)
+def delete_volunteer(request, registration_id):
+    registration = get_object_or_404(VolunteerRegistration, id=registration_id)
+    event_id = registration.event.id
+    if request.method == 'POST':
+        registration.delete()
+    return HttpResponseRedirect(reverse('volunteer_list_view', args=[event_id]))
+
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def delete_highlight(request, pk):
+    if request.method == "POST" and request.user.is_staff:
+        highlight = get_object_or_404(EventHighlight, pk=pk)
+        highlight.delete()
+    return redirect('highlights_list')  # change to your list view name
 
 # Create your views here.
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
+def admin_profile_view(request):
+    return render(request, 'admin_profile.html')
+
+@login_required
+def profile_view(request):
+    registered_events = EventRegistration.objects.filter(user=request.user).select_related('event')
+    volunteered_events = VolunteerRegistration.objects.filter(user=request.user).select_related('event')
+
+    return render(request, 'profile.html', {
+        'registered_events': registered_events,
+        'volunteered_events': volunteered_events,
+    })
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('profile')
+    else:
+        form = EditProfileForm(instance=request.user)
+    return render(request, 'edit_profile.html', {'form': form})
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password changed successfully!")
+            return redirect('profile')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+
+@login_required
 def event_list(request):
+    if request.user.is_superuser:
+        return redirect('admin_event_list')
     query = request.GET.get('q', '')  
     events = Event.objects.all().order_by('-created_at')
 
@@ -44,6 +297,38 @@ def event_list(request):
         'other_events': other_events,
         'registered_event_ids': registered_event_ids,
     })
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def admin_event_list(request):
+    query = request.GET.get('q', '')  
+    events = Event.objects.all().order_by('-created_at')
+
+    registered_event_ids = []
+    if request.user.is_authenticated:
+        registered_event_ids = EventRegistration.objects.filter(user=request.user).values_list('event_id', flat=True)
+
+    if query:
+        searched_events = events.filter(name__icontains=query)
+        return render(request, 'admin_event_list.html', {
+            'events': searched_events,
+            'query': query,
+            'registered_event_ids': registered_event_ids
+        })
+
+    sports_events = Event.objects.filter(category='Sports').order_by('-created_at')
+    cultural_events = Event.objects.filter(category='Cultural').order_by('-created_at')
+    coding_events = Event.objects.filter(category='Coding').order_by('-created_at')
+    other_events = Event.objects.filter(category='Other').order_by('-created_at') 
+
+    return render(request, 'admin_event_list.html', {
+        'sports_events': sports_events,
+        'coding_events': coding_events,
+        'cultural_events': cultural_events,
+        'other_events': other_events,
+        'registered_event_ids': registered_event_ids
+    })
+
 @login_required
 def registered_events(request):
     registrations = EventRegistration.objects.filter(user=request.user)
@@ -102,7 +387,22 @@ def event_registration(request, event_id):
         form = EventRegistrationForm(event=event)
 
     return render(request, 'event_registration.html', {'form': form, 'event': event})
-
+    
+@login_required
+def unregister_event(request, reg_id):
+    registration = get_object_or_404(EventRegistration, id=reg_id, user=request.user)
+    if request.method == 'POST':
+        registration.delete()
+        return redirect('profile') 
+    return render(request, 'confirm_unregister.html', {'event': registration.event, 'type': 'event'})
+    
+@login_required
+def unregister_volunteer(request, reg_id):
+    registration = get_object_or_404(VolunteerRegistration, id=reg_id, user=request.user)
+    if request.method == 'POST':
+        registration.delete()
+        return redirect('profile')
+    return render(request, 'confirm_unregister.html', {'event': registration.event, 'type': 'volunteer'})
 
 
 def register(request):

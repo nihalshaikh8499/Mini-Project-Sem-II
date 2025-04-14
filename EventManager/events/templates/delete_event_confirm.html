@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg w-100" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Confirm Delete</h4>
+        </div>
+        <div class="card-body">
+            <p>Are you sure you want to delete the event: <strong>{{ object.name }}</strong>?</p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a href="{% url 'admin_event_list' %}" class="btn btn-secondary ms-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

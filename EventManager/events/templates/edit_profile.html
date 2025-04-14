@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow" style="width: 100%; max-width: 600px;">
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4">Edit Profile</h2>
+
+      <form method="POST" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field|add_class:"form-control" }}
+            {% comment %} {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %} {% endcomment %}
+            {% for error in field.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <div class="text-end">
+          <button type="submit" class="btn btn-success">Save Changes</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

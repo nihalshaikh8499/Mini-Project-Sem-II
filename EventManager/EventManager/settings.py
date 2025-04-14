@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'events',
     'widget_tweaks',
+    
 ]
 
 MIDDLEWARE = [
@@ -132,7 +133,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = 'event_list'
-LOGOUT_REDIRECT_URL = 'event_list'
+LOGOUT_REDIRECT_URL = '/accounts/login'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
